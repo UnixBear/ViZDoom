@@ -1,0 +1,290 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "import Tkinter as tk\nfrom Tkinter import *\nimport os\nimport platform\nimport sys\nfrom collections import deque\nfrom itertools import cycle\nfrom PIL import Image  \nfrom PIL import ImageTk\nimport psutil\n\nclass Slideshow(object):\n    def __init__(self, parent, filenames, slideshow_delay=2, history_size=200):\n        self.ma = parent.winfo_toplevel()\n        self.filenames = cycle(filenames)\n        self._files = deque(maxlen=history_size)\n        self._photoimage = None\n        self._id = None\n        self.imglbl = tk.Label(parent)\n        self.imglbl.pack(fill=tk.BOTH, expand=True)\n        self.imglbl.after(1, self._slideshow, slideshow_delay * 1000)\n\n    def _slideshow(self, delay_milliseconds):\n        self._files.append(next(self.filenames))\n        self.show_image()\n        self.imglbl.after(delay_milliseconds, self._slideshow, delay_milliseconds)\n\n    def show_image(self):\n        filename = self._files[-1]\n        image = Image.open(filename) \n\n        w, h = self.ma.winfo_width(), self.ma.winfo_height()\n        if image.size[0] > w or image.size[1] > h:\n\n            if w < 3 or h < 3:  # too small\n                return  # do nothing\n            image.thumbnail((w - 2, h - 2), Image.ANTIALIAS)\n\n        self._photo_image = ImageTk.PhotoImage(image)\n        self.imglbl.configure(image=self._photo_image)\n\n        self.ma.wm_title(filename)\n\n    def _show_image_on_next_tick(self):\n        if self._id is not None:\n            self.imglbl.after_cancel(self._id)\n        self._id = self.imglbl.after(1, self.show_image)\n\n    def next_image(self, event_unused=None):\n        self._files.rotate(-1)\n        self._show_image_on_next_tick()\n\n    def prev_image(self, event_unused=None):\n        self._files.rotate()\n        self._show_image_on_next_tick()\n\n    def fit_image(self, event=None, _last=[None] * 2):\n        if event is not None and event.widget is self.ma and (\n                _last[0] != event.width or _last[1] != event.height):\n            _last[:] = event.width, event.height\n            self._show_image_on_next_tick()\n\n\ndef get_image_files(rootdir):\n    for path, dirs, files in os.walk(rootdir):\n        dirs.sort()  \n        files.sort()  \n        for filename in files:\n            if filename.lower().endswith('.jpg'):\n                yield os.path.join(path, filename)\n\n\ndef main():\n    logging.basicConfig(format=\"%(asctime)-15s %(message)s\",\n                        datefmt=\"%F %T\",\n                        level=logging.DEBUG)\n\n    root = tk.Tk()\n\n    imagedir = sys.argv[1] if len(sys.argv) > 1 else '.'\n    image_filenames = get_image_files(imagedir)\n\n    if platform.system() == \"Windows\":\n        root.wm_state('zoomed')  # start maximized\n    else:\n        width, height, xoffset, yoffset = 400, 300, 0, 0\n        root.geometry(\"%dx%d%+d%+d\" % (width, height, xoffset, yoffset))\n\n    try:  \n        app = Slideshow(root, image_filenames, slideshow_delay=2)\n    except StopIteration:\n        sys.exit(\"no image files found in %r\" % (imagedir, ))\n\n    root.bind(\"<Escape>\", lambda _: root.destroy())  # exit on Esc\n    root.bind('<Prior>', app.prev_image)\n    root.bind('<Up>', app.prev_image)\n    root.bind('<Left>', app.prev_image)\n    root.bind('<Next>', app.next_image)\n    root.bind('<Down>', app.next_image)\n    root.bind('<Right>', app.next_image)\n\n    root.bind(\"<Configure>\", app.fit_image)  \n    root.focus_set()\n    root.mainloop()\n\n\nif __name__ == '__main__':\n    main()\n\n",
+			"file": "/home/morpheus/Projects/SketchAnne/test.py",
+			"file_size": 3447,
+			"file_write_time": 131314022567137443,
+			"settings":
+			{
+				"buffer_size": 3432,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/morpheus/Projects/SketchAnne/animation/test2.py",
+			"settings":
+			{
+				"buffer_size": 175,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 170.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"package control",
+				"Package Control: List Packages"
+			],
+			[
+				"",
+				"Material Theme: Configuration"
+			],
+			[
+				"MATERIAL",
+				"Material Theme: Advanced configuration"
+			],
+			[
+				"ACTIVATE",
+				"Material Theme: Activate theme"
+			],
+			[
+				"install package",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 431.0
+	},
+	"console":
+	{
+		"height": 111.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/morpheus/Projects/SketchAnne",
+		"/home/morpheus/Projects/SketchAnne/animation"
+	],
+	"file_history":
+	[
+		"/home/morpheus/Projects/SketchAnne/test2.py",
+		"/home/morpheus/Projects/SketchAnne/README.md",
+		"/home/morpheus/Projects/SketchAnne/canvas_test.py",
+		"/home/morpheus/Projects/SketchAnne/test.py",
+		"/home/morpheus/Projects/SketchAnne/canvas_test2.py",
+		"/home/morpheus/Projects/ViZDoom/README.md",
+		"/home/morpheus/.config/sublime-text-3/Packages/User/SublimeLinter.sublime-settings",
+		"/home/morpheus/Projects/ViZDoom/examples/python/learning_theano.py",
+		"/home/morpheus/Downloads/Material Theme - Appbar/Material-Theme.sublime-theme"
+	],
+	"find":
+	{
+		"height": 28.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"debug",
+			"()\n",
+			"canvas",
+			"eraser_mod",
+			"erase",
+			"pen",
+			"activate_but",
+			"frame"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/morpheus/Projects/SketchAnne/test.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3432,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 702.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/morpheus/Projects/SketchAnne/animation/test2.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 175,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								175,
+								175
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "vizdoom.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 238.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
